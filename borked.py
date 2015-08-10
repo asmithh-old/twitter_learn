@@ -90,8 +90,9 @@ def clean():
             matrix.append((l, s))
     return (matrix, valid)
 (matrix, valid) = clean()
-random.shuffle(matrix)
-train = ([m[1] for m in matrix[:int(0.8*len(matrix))]], [m[0] for m in matrix[:int(0.8*len(matrix))]])
-validate = [m[1] for m in matrix[int(0.8*len(matrix)):]], [m[0] for m in matrix[int(0.8*len(matrix)):]]
-net = theanets.feedforward.Classifier(layers=[len(valid), 500, 6])
-print net.score(train[0], train[1], w = None)
+def neural_net():
+    random.shuffle(matrix)
+    train = ([m[1] for m in matrix[:int(0.8*len(matrix))]], [m[0] for m in matrix[:int(0.8*len(matrix))]])
+    validate = [m[1] for m in matrix[int(0.8*len(matrix)):]], [m[0] for m in matrix[int(0.8*len(matrix)):]]
+    net = theanets.feedforward.Classifier(layers=[len(valid), 500, 6])
+    print net.score(train[0], train[1], w = None)
