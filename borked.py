@@ -1,4 +1,4 @@
-import theanets, tweepy, csv, time, ast, numpy as np, random
+import theanets, tweepy, csv, time, ast, numpy as np, random, os.path
 
 consumer_key = 'foo'
 consumer_secret = 'foo'
@@ -27,7 +27,7 @@ def get_tweets(ckey, csecret, atoken, asecret, keywords):
 #get_tweets(consumer_key, consumer_secret, access_token, access_token_secret, keywords)
 
 def clean():
-    with open('gender_tweets_2.csv') as f:
+    with open(os.path.expanduser('~/Desktop/steak/gender_tweets_2.csv')) as f:
         tweets = {i:[] for i in range(len(keywords))}
         freq = {i:dict() for i in range(len(keywords))}
         num_words = {i:0 for i in range(len(keywords))}
@@ -65,7 +65,7 @@ def clean():
     for w in list(all_words_set):
         b = [freq[k][w] if w in freq[k] else 0 for k in range(len(keywords))]
         avg = np.sum(b)/float(len(keywords))
-        if avg < 0.000001:
+        if avg < 0.00001:
             print 'rare', w
         elif np.sum([(i-avg)**2 for i in b])/float(len(keywords)) < 0.00000001:
             print 'non-indicative', w
@@ -78,16 +78,20 @@ def clean():
     print len(valid)
     matrix = []
     for k in tweets_cleaner.keys():
+        if k == 0 or k == 1 or k == 2:
+            l = 0
+        elif k == 3 or k == 4 or k == 5:
+            l = 1
         for t in tweets_cleaner[k]:
             s = np.zeros(len(valid))
             for w in t.keys():
                 if w in valid:
                     s[valid.index(w)] = 1
-            matrix.append((k, s))
+            matrix.append((l, s))
     return (matrix, valid)
 (matrix, valid) = clean()
 random.shuffle(matrix)
 train = ([m[1] for m in matrix[:int(0.8*len(matrix))]], [m[0] for m in matrix[:int(0.8*len(matrix))]])
 validate = [m[1] for m in matrix[int(0.8*len(matrix)):]], [m[0] for m in matrix[int(0.8*len(matrix)):]]
-net = theanets.feedforward.Classifier(layers=[len(valid), len(valid), len(valid), 1000, 500, 50])
+net = theanets.feedforward.Classifier(layers=[len(valid), 500, 6])
 print net.score(train[0], train[1], w = None)
